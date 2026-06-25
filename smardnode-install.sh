@@ -80,11 +80,30 @@ apt-get install -y curl ca-certificates tar unzip openssl ufw fail2ban htop jq c
 timedatectl set-timezone UTC
 systemctl enable --now chrony
 
+cat > /etc/apt/apt.conf.d/50unattended-upgrades << 'UEOF'
+Unattended-Upgrade::Allowed-Origins {
+    "${distro_id}:${distro_codename}";
+    "${distro_id}:${distro_codename}-security";
+    "${distro_id}ESMApps:${distro_codename}-apps-security";
+    "${distro_id}ESM:${distro_codename}-infra-security";
+};
+Unattended-Upgrade::AutoFixInterruptedDpkg "true";
+Unattended-Upgrade::MinimalSteps "true";
+Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+Unattended-Upgrade::Remove-Unused-Dependencies "true";
+Unattended-Upgrade::Automatic-Reboot "true";
+Unattended-Upgrade::Automatic-Reboot-Time "03:00";
+UEOF
+
 cat >/etc/apt/apt.conf.d/20auto-upgrades <<'APTEOF'
-APT::Periodic::Update-Package-Lists "1";
-APT::Periodic::Unattended-Upgrade "1";
-APT::Periodic::AutocleanInterval "7";
+APT::Periodic::Update-Package-Lists "14";
+APT::Periodic::Download-Upgradeable-Packages "14";
+APT::Periodic::AutocleanInterval "14";
+APT::Periodic::Unattended-Upgrade "14";
 APTEOF
+
+systemctl enable apt-daily-upgrade.timer 2>/dev/null || true
+systemctl restart apt-daily-upgrade.timer 2>/dev/null || true
 
 if ! swapon --show | grep -q '^'; then
   swapoff /swapfile 2>/dev/null || true
@@ -328,7 +347,7 @@ echo ""
 echo " Miner logs:  journalctl -u smardnode-miner -f"
 echo " CPU quota:   ${MINING_CPU_QUOTA:-10%}"
 echo ""
-echo " Enable auto-updates: sudo bash auto-updates-setup.sh"
+echo " Auto-updates: Enabled (every 14 days, auto-reboot at 03:00 if needed)"
 echo ""
 echo " NOTE: Configure smartnode.conf on your controller wallet"
 echo " and run smartnode start-alias."
