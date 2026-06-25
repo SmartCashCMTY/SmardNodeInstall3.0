@@ -345,7 +345,6 @@ echo "   smartcash-cli -conf=$CONFDIR/smartcash.conf -datadir=$DATADIR getblockc
 echo "   smartcash-cli -conf=$CONFDIR/smartcash.conf -datadir=$DATADIR smartnode status"
 echo ""
 echo " Miner logs:  journalctl -u smardnode-miner -f"
-echo " CPU quota:   ${MINING_CPU_QUOTA:-10%}"
 echo ""
 echo " Auto-updates: Enabled (every 14 days, auto-reboot at 03:00 if needed)"
 echo ""
