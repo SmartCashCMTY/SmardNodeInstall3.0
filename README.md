@@ -52,7 +52,7 @@ sudo bash ./SmardNodeInstall.sh
 - Ubuntu Server 24.04 LTS
 - Public IPv4 address
 - 2 vCPU (recommended: 4 vCPU)
-- 2 GB RAM (recommended: 8 GB RAM)
+- 4 GB RAM (recommended: 8 GB RAM)
 - 30 GB SSD (recommended: 120 GB NVMe)
 
 ## Configuration After Installation
