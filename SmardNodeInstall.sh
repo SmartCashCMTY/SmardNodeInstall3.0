@@ -21,13 +21,15 @@ set -euo pipefail
 #   or clearing history with: history -c
 # ==============================================================================
 
-SMARDNODE_INSTALL_URL="https://raw.githubusercontent.com/SmartCashCMTY/SmardNode3.0/main/smardnode-install.sh"
+SMARDNODE_INSTALL_COMMIT="0b0a6630cde285a9e583159be2a43e33840a0e28"
+SMARDNODE_INSTALL_URL="https://raw.githubusercontent.com/SmartCashCMTY/SmardNode3.0/${SMARDNODE_INSTALL_COMMIT}/smardnode-install.sh"
 
 # Expected SHA256 hash of the downloaded installer script.
-# IMPORTANT: This hash must be updated whenever smardnode-install.sh changes in
-# the upstream repository. To generate the correct hash, download the script and
-# run: sha256sum smardnode-install.sh
-SMARDNODE_INSTALL_SHA256="a7b29be7ed0d235b22ad9dd12470b1a97590d4f95fa5de6dd49480d10078e7b4"
+# This hash corresponds to commit 0b0a6630. If the commit changes, update both
+# SMARDNODE_INSTALL_COMMIT and this hash. To generate the hash:
+#   curl -fL -o smardnode-install.sh "${SMARDNODE_INSTALL_URL}"
+#   sha256sum smardnode-install.sh
+SMARDNODE_INSTALL_SHA256="2dedd664585dcad3dff86e1f78ad99a50801342083a831bd5f3ebe65f25c108a"
 
 if [[ $EUID -ne 0 ]]; then
   echo "Please run as root: sudo bash ./SmardNodeInstall.sh" >&2
