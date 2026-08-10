@@ -98,8 +98,14 @@ with their respective owners.
 
 ## License
 
-SmartCash Core is released under the MIT License.
-See https://github.com/SmartCashCMTY/Core-Source-Repo for the full license text.
+SmartCashCMTY installer code is released under the MIT License.
+See [LICENSE](LICENSE) for details.
+
+The SmartCash Core binaries installed by this script are separate software
+components distributed under the MIT License. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)
+for a complete overview of all installed components and their licenses.
+
+SmartCash Core source: https://github.com/SmartCashCMTY/Core-Source-Repo
 
 ## Disclaimer
 

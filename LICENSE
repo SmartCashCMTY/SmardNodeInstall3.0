@@ -2,6 +2,18 @@ MIT License
 
 Copyright (c) 2025 SmartCash Community
 
+The MIT License applies to the original installer scripts and configuration
+files created by SmartCashCMTY.
+
+The SmartCash Core daemon binaries downloaded and installed by this installer
+are separate software components based on Bitcoin Core and SmartCash Core.
+They are licensed under the MIT License with copyright by:
+  - The Bitcoin Core developers (2009-2017)
+  - The SmartCash developers (2017-2020)
+
+These binaries are not re-licensed by this installer's MIT License.
+See THIRD-PARTY-NOTICES.md for details.
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
