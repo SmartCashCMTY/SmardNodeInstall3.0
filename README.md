@@ -83,6 +83,31 @@ sudo bash ./SmardNodeInstall.sh
 
 ## Security
 
+### Installer Integrity
+
+The installer verifies the SHA256 checksum of the downloaded `smardnode-install.sh`
+before execution to protect against supply-chain attacks and unauthorized modifications.
+If the hash does not match, installation is aborted.
+
+The expected hash is hardcoded in `SmardNodeInstall.sh` and must be updated whenever
+the upstream `smardnode-install.sh` changes in the
+[SmardNode3.0](https://github.com/SmartCashCMTY/SmardNode3.0) repository.
+
+### Private Key Handling
+
+- `SMARTNODE_PRIVKEY` is passed to the child installer process via environment
+  variable. Be aware that environment variables may be readable via `/proc/<pid>/environ`
+  while the process is running.
+- All sensitive environment variables (`SMARTNODE_PRIVKEY`, `SMARTNODE_WALLET_ADDRESS`,
+  `EXTERNAL_IP`) are explicitly unset after installation completes.
+- Temporary files (including the downloaded installer script) are cleaned up via
+  a trap handler on exit.
+- **Important:** The private key you type at the prompt may persist in your bash
+  history. Consider running `history -c` or `history -d` after installation to
+  remove it.
+
+### System Updates
+
 Automatic security updates can be enabled with:
 
 ```bash
