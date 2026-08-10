@@ -22,13 +22,20 @@ fi
 if [[ "${1:-}" == "--help" ]]; then
   cat <<'EOF'
 Usage:
+  bash smardnode-install.sh [secret_file]
+
+The secret file (if provided) should contain shell variable assignments
+that will be sourced before the installer runs:
+
+  SMARTNODE_PRIVKEY="YOUR_SMARTNODE_PRIVKEY"
+  SMARTNODE_WALLET_ADDRESS="YOUR_WALLET_ADDRESS"
+  EXTERNAL_IP="YOUR_PUBLIC_IPV4"  (optional)
+
+For backward compatibility, you may also set environment variables:
+
   sudo SMARTNODE_PRIVKEY="YOUR_SMARTNODE_PRIVKEY" \
        SMARTNODE_WALLET_ADDRESS="YOUR_WALLET_ADDRESS" \
        bash smardnode-install.sh
-
-Required environment variables:
-  SMARTNODE_PRIVKEY="YOUR_SMARTNODE_PRIVKEY"
-  SMARTNODE_WALLET_ADDRESS="YOUR_WALLET_ADDRESS"
 
 Optional environment variables:
   EXTERNAL_IP="YOUR_PUBLIC_IPV4"
@@ -41,6 +48,10 @@ Optional environment variables:
 This script installs SmardNode 3.0.0 on Ubuntu Server 24.04 LTS.
 EOF
   exit 0
+fi
+
+if [[ -n "${1:-}" ]] && [[ -f "$1" ]]; then
+  source "$1"
 fi
 
 if [[ -z "${SMARTNODE_PRIVKEY:-}" ]]; then

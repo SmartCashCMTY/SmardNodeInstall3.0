@@ -9,10 +9,10 @@ set -euo pipefail
 #
 #   1. SHA256 hash verification of the downloaded installer script to prevent
 #      supply-chain attacks and ensure integrity.
-#   2. The private key (SMARTNODE_PRIVKEY) is passed via environment variable,
-#      which may be visible in /proc/<pid>/environ on the local system. After
-#      installation completes, all sensitive environment variables are explicitly
-#      unset to limit exposure.
+#   2. The private key and wallet address are written to a temporary file with
+#      restricted permissions (chmod 600), sourced by the child installer, and
+#      deleted on exit. Sensitive values are never passed via environment
+#      variables, preventing exposure through /proc/<pid>/environ.
 #   3. Temporary files are cleaned up on exit via a trap handler.
 #
 #   WARNING: The private key entered at the prompt will be stored in your bash
@@ -27,7 +27,7 @@ SMARDNODE_INSTALL_URL="https://raw.githubusercontent.com/SmartCashCMTY/SmardNode
 # IMPORTANT: This hash must be updated whenever smardnode-install.sh changes in
 # the upstream repository. To generate the correct hash, download the script and
 # run: sha256sum smardnode-install.sh
-SMARDNODE_INSTALL_SHA256="REPLACE_WITH_EXPECTED_SHA256_HASH"
+SMARDNODE_INSTALL_SHA256="a7b29be7ed0d235b22ad9dd12470b1a97590d4f95fa5de6dd49480d10078e7b4"
 
 if [[ $EUID -ne 0 ]]; then
   echo "Please run as root: sudo bash ./SmardNodeInstall.sh" >&2
@@ -93,7 +93,9 @@ echo ""
 install_curl_if_missing
 
 tmpdir="$(mktemp -d)"
-trap 'rm -rf "$tmpdir"; unset SMARTNODE_PRIVKEY SMARTNODE_WALLET_ADDRESS EXTERNAL_IP' EXIT
+secretfile="$(mktemp)"
+chmod 600 "$secretfile"
+trap 'rm -rf "$tmpdir" "$secretfile"; unset SMARTNODE_PRIVKEY SMARTNODE_WALLET_ADDRESS EXTERNAL_IP' EXIT
 
 curl -fsSL -o "$tmpdir/smardnode-install.sh" "$SMARDNODE_INSTALL_URL"
 
@@ -112,16 +114,15 @@ echo "Checksum verified OK."
 
 chmod +x "$tmpdir/smardnode-install.sh"
 
-if [[ -n "${EXTERNAL_IP:-}" ]]; then
-  EXTERNAL_IP="$EXTERNAL_IP" \
-  SMARTNODE_PRIVKEY="$SMARTNODE_PRIVKEY" \
-  SMARTNODE_WALLET_ADDRESS="$SMARTNODE_WALLET_ADDRESS" \
-  bash "$tmpdir/smardnode-install.sh"
-else
-  SMARTNODE_PRIVKEY="$SMARTNODE_PRIVKEY" \
-  SMARTNODE_WALLET_ADDRESS="$SMARTNODE_WALLET_ADDRESS" \
-  bash "$tmpdir/smardnode-install.sh"
-fi
+{
+  echo "SMARTNODE_PRIVKEY=\"$SMARTNODE_PRIVKEY\""
+  echo "SMARTNODE_WALLET_ADDRESS=\"$SMARTNODE_WALLET_ADDRESS\""
+  if [[ -n "${EXTERNAL_IP:-}" ]]; then
+    echo "EXTERNAL_IP=\"$EXTERNAL_IP\""
+  fi
+} > "$secretfile"
+
+bash "$tmpdir/smardnode-install.sh" "$secretfile"
 
 unset SMARTNODE_PRIVKEY SMARTNODE_WALLET_ADDRESS EXTERNAL_IP
 

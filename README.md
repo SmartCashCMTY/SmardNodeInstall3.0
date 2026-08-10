@@ -10,7 +10,7 @@ It downloads and runs the official SmardNode installer with the values you provi
 ## Quick Start
 
 ```bash
-wget https://raw.githubusercontent.com/SmartCashCMTY/SmardNodeInstall3.0/main/SmardNodeInstall.sh
+wget https://raw.githubusercontent.com/SmartCashCMTY/SmardNodeInstall3.0/v3.0.0/SmardNodeInstall.sh
 sudo bash ./SmardNodeInstall.sh
 ```
 
@@ -72,7 +72,7 @@ systemctl status smardnode-miner.timer --no-pager
 ## Update
 
 ```bash
-wget https://raw.githubusercontent.com/SmartCashCMTY/SmardNodeInstall3.0/main/SmardNodeInstall.sh
+wget https://raw.githubusercontent.com/SmartCashCMTY/SmardNodeInstall3.0/v3.0.0/SmardNodeInstall.sh
 sudo bash ./SmardNodeInstall.sh
 ```
 
@@ -95,13 +95,12 @@ the upstream `smardnode-install.sh` changes in the
 
 ### Private Key Handling
 
-- `SMARTNODE_PRIVKEY` is passed to the child installer process via environment
-  variable. Be aware that environment variables may be readable via `/proc/<pid>/environ`
-  while the process is running.
-- All sensitive environment variables (`SMARTNODE_PRIVKEY`, `SMARTNODE_WALLET_ADDRESS`,
-  `EXTERNAL_IP`) are explicitly unset after installation completes.
-- Temporary files (including the downloaded installer script) are cleaned up via
-  a trap handler on exit.
+- `SmardNodeInstall.sh` prompts interactively for the private key and wallet
+  address. These values are never passed via environment variables to avoid
+  exposure through `/proc/<pid>/environ`.
+- Secrets are written to a temporary file with restrictive permissions
+  (`chmod 600`), sourced by the child installer, and securely deleted on exit
+  via a trap handler.
 - **Important:** The private key you type at the prompt may persist in your bash
   history. Consider running `history -c` or `history -d` after installation to
   remove it.
